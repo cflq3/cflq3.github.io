@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>  
 	  
-  	Archives - 0xn0p.org
+  	tmux配置 - 0xn0p.org
   	
 	</title>
 
@@ -116,128 +116,92 @@
 		</div>	
 		<div class="mid-col">
 			<div class="mid-col-container"> <div id="content" class="inner">
-	<div itemscope itemtype="http://schema.org/Blog">
-		<section class="archives">
 
-		
-			 
-			  	<h1 style="top: auto;" class="year">2019</h1>
-			
-			
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">tmux配置</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<p>tmux 是一个优秀的终端复用器类自由软件，功能类似GNU Screen，但使用BSD 许可发布。用户可以通过tmux 在一个终端内管理多个分离的会话，窗口及面板，对于同时使用多个命令行，或多个任务时非常方便。</p>
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E7%A7%81%E6%9C%89%E4%BA%91.html'>私有云</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="owncloud_dns.html">
-					自建私有云系列——自建DNS</a></h1>
-				</article>
-	 	
-			
-			
+<span id="more"></span><!-- more -->
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E6%97%A5%E5%B8%B8%E5%BA%94%E7%94%A8.html'>日常应用</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="vim_set.html">
-					vim配置</a></h1>
-				</article>
-	 	
-			
-			
+<h2 id="toc_0">系统</h2>
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E7%A7%81%E6%9C%89%E4%BA%91.html'>私有云</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="owncloud_rss.html">
-					自建私有云系列——自建RSS</a></h1>
-				</article>
-	 	
-			
-			
+<ul>
+<li>前缀键(prefix): ctrl+a</li>
+<li>关闭服务器，所有的会话都将关闭: tmux kill-server</li>
+<li>命令行模式，直接输入命令: prefix+:</li>
+<li>复制模式(按q退出): prefix+[  进入复制模式，调整光标位置，按v键(mac)/空格键(*nix)开始复制，h/j/k/l移动光标，y键复制文本到系统剪切板并退出复制模式</li>
+<li>粘贴模式: prefix+]/command(ctrl)+v</li>
+<li>自动重载配置: prefix+r</li>
+</ul>
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E6%97%A5%E5%B8%B8%E5%BA%94%E7%94%A8.html'>日常应用</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="tmux_set.html">
-					tmux配置</a></h1>
-				</article>
-	 	
-			
-			
+<h2 id="toc_1">会话</h2>
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E7%A7%81%E6%9C%89%E4%BA%91.html'>私有云</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="owncloud_drive.html">
-					自建私有云系列——自建分享网盘</a></h1>
-				</article>
-	 	
-			
-			
+<ul>
+<li>新建会话: tmux new -s session-name</li>
+<li>断开会话: prefix+d</li>
+<li>进入之前断开的会话: tmux a -t session-name</li>
+<li>关闭会话: tmux kill-session -t session-name</li>
+<li>查看所有会话: tmux ls/prefix+s</li>
+</ul>
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E6%97%A5%E5%B8%B8%E5%BA%94%E7%94%A8.html'>日常应用</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="mac_set.html">
-					Mac全新安装记录</a></h1>
-				</article>
-	 	
+<h2 id="toc_2">窗口</h2>
 
-	  </section>
+<ul>
+<li>新建窗口: prefix+c</li>
+<li>切换窗口: prefix+0-9</li>
+<li>切换到上一个窗口: prefix+p</li>
+<li>切换到下一个窗口: prefix+n</li>
+<li>打开窗口列表: prefix+w</li>
+<li>重命名当前窗口: prefix+,</li>
+<li>修改窗口编号: prefix+.</li>
+<li>快速定位窗口: prefix+f</li>
+</ul>
+
+<h2 id="toc_3">面板</h2>
+
+<ul>
+<li>左右分割窗口为2个面板(画竖线): prefix+|</li>
+<li>上下分割窗口为2个面板(画横线): prefix+-</li>
+<li>关闭当前面板: prefix+x</li>
+<li>最大化当前面板: prefix+z(再按一次还原)</li>
+<li>显示面板编号，快速切换面板: prefix+q</li>
+<li>切换面板: prefix+h/j/k/l</li>
+<li>调整面板大小: prefix+&gt;/&lt;/_/+</li>
+<li>合并指定窗口(window)指定面板(第一个面板)到当前窗口: prefix+:进入命令行模式，join-pane -s [session_name]:[window].[pane]</li>
+<li>多面板批量执行: prefix+:进入命令行模式，set synchronize-panes</li>
+</ul>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	 <div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://0xn0p.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+	  
+	    <div id="disqus_thread"></div>
+	  
+
+	  
+
 	</div>
 </div>        </div>
 			<footer id="footer" class="inner">Copyright &copy; 2014

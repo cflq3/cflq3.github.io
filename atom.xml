@@ -4,7 +4,7 @@
   <title><![CDATA[0xn0p.org]]></title>
   <link href="https://0xn0p.org/atom.xml" rel="self"/>
   <link href="https://0xn0p.org/"/>
-  <updated>2019-02-09T01:37:21+08:00</updated>
+  <updated>2019-02-09T02:10:55+08:00</updated>
   <id>https://0xn0p.org/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[自建私有云系列——自建DNS]]></title>
-    <link href="https://0xn0p.org/15496203170439.html"/>
+    <link href="https://0xn0p.org/owncloud_dns.html"/>
     <updated>2019-02-08T18:05:17+08:00</updated>
-    <id>https://0xn0p.org/15496203170439.html</id>
+    <id>https://0xn0p.org/owncloud_dns.html</id>
     <content type="html"><![CDATA[
 <p>由于众所周知的原因，部分国家和地区的DNS服务不太正常。具体表现为访问部分网站会被rst，还有在访问正常内容中突然出现不可描述的小广告。如何干净、快速、正常的进行访问，已成为一个重要问题。</p>
 
@@ -107,9 +107,9 @@ sudo brew services start dnscrypt-proxy ##安装为服务，开机启动，切�
   
   <entry>
     <title type="html"><![CDATA[vim配置]]></title>
-    <link href="https://0xn0p.org/15496203170484.html"/>
+    <link href="https://0xn0p.org/vim_set.html"/>
     <updated>2019-02-08T18:05:17+08:00</updated>
-    <id>https://0xn0p.org/15496203170484.html</id>
+    <id>https://0xn0p.org/vim_set.html</id>
     <content type="html"><![CDATA[
 <p>fork 了 k-vim,调整了一些选项,记录配置,方便回忆使用。</p>
 
@@ -401,9 +401,9 @@ shift+v切换到正常模式，然后i/I/a/A起作用</p>
   
   <entry>
     <title type="html"><![CDATA[自建私有云系列——自建RSS]]></title>
-    <link href="https://0xn0p.org/15496203170535.html"/>
+    <link href="https://0xn0p.org/owncloud_rss.html"/>
     <updated>2019-02-08T18:05:17+08:00</updated>
-    <id>https://0xn0p.org/15496203170535.html</id>
+    <id>https://0xn0p.org/owncloud_rss.html</id>
     <content type="html"><![CDATA[
 <p>自从 Goolgle reader 下线后，rss 就走向了没落。互联网游原门户模式向 app 模式发展，博客也转换为公众号、专栏等。然而，我们常用的服务分散在各个网站、各个 app 里，十分不便。采取 rss 的方式，可统一集中内容、消息来源，便于整理、查阅。</p>
 
@@ -439,9 +439,9 @@ $ docker run -d --name rsshub -p 1200:1200 diygod/rsshub
   
   <entry>
     <title type="html"><![CDATA[tmux配置]]></title>
-    <link href="https://0xn0p.org/15496203170585.html"/>
+    <link href="https://0xn0p.org/tmux_set.html"/>
     <updated>2019-02-08T18:05:17+08:00</updated>
-    <id>https://0xn0p.org/15496203170585.html</id>
+    <id>https://0xn0p.org/tmux_set.html</id>
     <content type="html"><![CDATA[
 <p>tmux 是一个优秀的终端复用器类自由软件，功能类似GNU Screen，但使用BSD 许可发布。用户可以通过tmux 在一个终端内管理多个分离的会话，窗口及面板，对于同时使用多个命令行，或多个任务时非常方便。</p>
 
@@ -500,9 +500,9 @@ $ docker run -d --name rsshub -p 1200:1200 diygod/rsshub
   
   <entry>
     <title type="html"><![CDATA[自建私有云系列——自建分享网盘]]></title>
-    <link href="https://0xn0p.org/15496203170628.html"/>
+    <link href="https://0xn0p.org/owncloud_drive.html"/>
     <updated>2019-02-08T18:05:17+08:00</updated>
-    <id>https://0xn0p.org/15496203170628.html</id>
+    <id>https://0xn0p.org/owncloud_drive.html</id>
     <content type="html"><![CDATA[
 <p>本文实现了一个低成本网盘方案。</p>
 
@@ -634,9 +634,9 @@ $ php one.php upload:file up/ /test/</p>
   
   <entry>
     <title type="html"><![CDATA[Mac全新安装记录]]></title>
-    <link href="https://0xn0p.org/15496203170667.html"/>
+    <link href="https://0xn0p.org/mac_set.html"/>
     <updated>2019-02-08T18:05:17+08:00</updated>
-    <id>https://0xn0p.org/15496203170667.html</id>
+    <id>https://0xn0p.org/mac_set.html</id>
     <content type="html"><![CDATA[
 <p>记录下新到手的MAC应该进行的配置。<br/>
 最后更新：2019 年 02 月 08 日</p>

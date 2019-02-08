@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>  
 	  
-  	Archives - 0xn0p.org
+  	自建私有云系列——自建RSS - 0xn0p.org
   	
 	</title>
 
@@ -116,128 +116,69 @@
 		</div>	
 		<div class="mid-col">
 			<div class="mid-col-container"> <div id="content" class="inner">
-	<div itemscope itemtype="http://schema.org/Blog">
-		<section class="archives">
 
-		
-			 
-			  	<h1 style="top: auto;" class="year">2019</h1>
-			
-			
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">自建私有云系列——自建RSS</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<p>自从 Goolgle reader 下线后，rss 就走向了没落。互联网游原门户模式向 app 模式发展，博客也转换为公众号、专栏等。然而，我们常用的服务分散在各个网站、各个 app 里，十分不便。采取 rss 的方式，可统一集中内容、消息来源，便于整理、查阅。</p>
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E7%A7%81%E6%9C%89%E4%BA%91.html'>私有云</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="owncloud_dns.html">
-					自建私有云系列——自建DNS</a></h1>
-				</article>
-	 	
-			
-			
+<span id="more"></span><!-- more -->
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E6%97%A5%E5%B8%B8%E5%BA%94%E7%94%A8.html'>日常应用</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="vim_set.html">
-					vim配置</a></h1>
-				</article>
-	 	
-			
-			
+<h2 id="toc_0">现有方案调研</h2>
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E7%A7%81%E6%9C%89%E4%BA%91.html'>私有云</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="owncloud_rss.html">
-					自建私有云系列——自建RSS</a></h1>
-				</article>
-	 	
-			
-			
+<h3 id="toc_1">阅读器</h3>
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E6%97%A5%E5%B8%B8%E5%BA%94%E7%94%A8.html'>日常应用</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="tmux_set.html">
-					tmux配置</a></h1>
-				</article>
-	 	
-			
-			
+<p>阅读器项目做的人还是很多的，纯自建推荐 <em>tiny tiny RSS</em>，但是没有移动客户端，只能通过网页访问。<br/>
+如果不是纯自建，首推 <em>inoreader</em>，支持网页版、ios、安卓，免费版功能已相当强大。如果是在MAC上， <em>Reeder</em> 当仁不让。</p>
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E7%A7%81%E6%9C%89%E4%BA%91.html'>私有云</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="owncloud_drive.html">
-					自建私有云系列——自建分享网盘</a></h1>
-				</article>
-	 	
-			
-			
+<h3 id="toc_2">订阅源抓取</h3>
 
-				<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-					<div class="meta">
-						<span class="date"><time datetime="2019-02-08T18:05:17+08:00" itemprop="datePublished">2月 08</time></span>
-						<br>
-						 
-						<span class="tags">posted in 
-						
-						    <a class='category' href='%E6%97%A5%E5%B8%B8%E5%BA%94%E7%94%A8.html'>日常应用</a>&nbsp;
-						 
-						</span>
-					    
-					</div>
-					<h1 class="title" itemprop="name"><a href="mac_set.html">
-					Mac全新安装记录</a></h1>
-				</article>
-	 	
+<p>阅读器有了，但阅读内容的获取涉及各个网站，各种服务，就比较麻烦。比如微信公众号的抓取就很难，虽然也有一些方案，但都是专项抓取，不成体系，部署麻烦。所以再次推荐<a href="%09https://rss.0xn0p.org/">RSS Hub</a>。自带各种订阅源和抓取策略，你可以让他提醒你天气，提醒你单位有了新通知，提醒你主播开播，提醒你追的剧又更新了，提醒你明天下雨，提醒你想租房的地方有了新的房源，提醒你想买的东西又降价了，提醒你快递到了，等等等等。当然，最主要的还是为你推送你关注的公众号、你订阅的知乎日报等内容。</p>
 
-	  </section>
+<h2 id="toc_3">服务部署</h2>
+
+<p>RSS Hub 的部署非常简单，官网讲的非常清楚了，我们依旧是非常省事的 Docker 部署：</p>
+
+<pre class="line-numbers"><code class="language-shell">$ docker pull diygod/rsshub
+$ docker run -d --name rsshub -p 1200:1200 diygod/rsshub
+</code></pre>
+
+<p>在浏览器中打开 <em>http://vps地址:1200</em> ，即可访问主页。</p>
+
+<h2 id="toc_4">使用</h2>
+
+<p>主页上有文档说明，只需要自己生成你想订阅的内容的地址，并将地址填到 RSS 阅读器中即可享受订阅全世界的乐趣。</p>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	 <div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://0xn0p.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+	  
+	    <div id="disqus_thread"></div>
+	  
+
+	  
+
 	</div>
 </div>        </div>
 			<footer id="footer" class="inner">Copyright &copy; 2014

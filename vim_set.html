@@ -1,0 +1,474 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	vim配置 - 0xn0p.org
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="0xn0p.org" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+				 
+					
+					<h1><a href="index.html">0xn0p.org</a></h1>
+					<p class="subtitle">年轻算什么，你老过么？</p>
+					<nav id="main-nav">
+						<ul class="main">
+						
+						  <li id=""><a target="self" href="index.html">Home</a></li>
+						
+						  <li id=""><a target="_self" href="archives.html">Archives</a></li>
+						
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+
+
+
+
+
+
+
+
+
+
+<a target="_blank" class="email" href="mailto:hackerlq@gmail.com" title="Email">Email</a>
+
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">vim配置</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<p>fork 了 k-vim,调整了一些选项,记录配置,方便回忆使用。</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">安装</h2>
+
+<p>安装参考<a href="%09https://github.com/wklken/k-vim">k-vim</a>这个项目,需要注意的是:</p>
+
+<ul>
+<li><p>youcompleteme 每次升级或者重装都要重新要编译</p></li>
+<li><p>安装前记得装好系统依赖</p></li>
+<li><p>插件安装采用vim-plug: <code>PlugInstall/PlugUpdate/PlugClean/PlugUpgrade/PlugStatus</code></p></li>
+<li><p>具体安装步骤:</p>
+<p>1.git clone</p>
+<p>2.下载依赖</p>
+<p>ubuntu:</p>
+<pre class="line-numbers"><code class="language-bash"> sudo apt-get install ctags nodejs npm
+ sudo apt-get install build-essential cmake python-dev  #编译YCM自动补全插件依赖<br/>
+ sudo apt-get install silversearcher-ag<br/>
+ sudo npm install -g jslint<br/>
+ sudo npm install jshint -g<br/>
+ sudo npm install -g eslint eslint-plugin-standard eslint-plugin-promise eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-html babel-eslint<br/>
+ sudo pip install flake8 yapf
+</code></pre>
+<p>mac:</p>
+<pre class="line-numbers"><code class="language-bash"> brew install ctags
+ brew install the_silver_searcher<br/>
+ brew install node<br/>
+ npm install jshint -g<br/>
+ npm install jslint -g<br/>
+ npm install -g eslint eslint-plugin-standard eslint-plugin-promise eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-html babel-eslint<br/>
+ pip install flake8 yapf
+</code></pre>
+<p>3.<code>chmod +x install.sh &amp;&amp; sudo ./install.sh</code></p></li>
+</ul>
+
+<h2 id="toc_1">删除</h2>
+
+<p><code>cd ~ &amp;&amp; rm -rf .vim .vimrc .vimrc.bundles &amp;&amp; cd -</code></p>
+
+<h2 id="toc_2">使用说明</h2>
+
+<h4 id="toc_3">自定义快捷键</h4>
+
+<ul>
+<li>leader键:    ,</li>
+<li>,+z+z:       代码折叠(默认为indent模式)</li>
+<li>Ctrl-n:      相对/绝对行号切换</li>
+<li>j+k:         连续按调整为esc</li>
+<li>F2:          行号开关,用于复制代码</li>
+<li>F3:          显示可打印字符开关</li>
+<li>F4:          换行开关</li>
+<li>F5:          粘贴模式开关,用于有格式代码的粘贴</li>
+<li>F6:          语法开关(关闭语法加快文件显示速度)</li>
+<li>F9:          打开标签导航,导航文件内函数,变量等(没有python支持)</li>
+<li>F10:         运行当前文件(quickrun)</li>
+<li>,+s+a:       全选</li>
+<li>,+v:         选中段落</li>
+<li>5j/k:        下/上移5行(相对行号模式)</li>
+<li>Ctrl+e/y:    上/下移5行</li>
+<li>H/L:         行首/行尾(normal模式)</li>
+<li>Ctrl+a/e:    行首/行尾(命令行模式)</li>
+<li><space>和/:  搜索</li>
+<li>&lt;/&gt;:         快速调整缩进(visual模式)</li>
+<li>Y:           复制到行尾</li>
+<li>,+y:         将选中区域复制到系统剪贴板</li>
+<li>&#39;#&#39;/*:       搜索字/词</li>
+<li>dal/yal/cil: 删除/粘贴/替换整行</li>
+<li>dae/yae/cie: 删除/粘贴/替换全部</li>
+<li>dai/yai/cii: 删除/粘贴/替换缩进</li>
+<li>c/d+i+&quot;:     替换/删除&quot;中的字符</li>
+<li>,+g:         python代码格式化</li>
+</ul>
+
+<h4 id="toc_4">分屏操作</h4>
+
+<ul>
+<li>:sp/:vsp:      上下/左右分屏</li>
+<li>Ctrl+w+-/+:   调整分屏大小</li>
+<li>Ctrl+j/k/h/l: 分屏移动</li>
+</ul>
+
+<h4 id="toc_5">tab操作</h4>
+
+<ul>
+<li>Ctrl+t:  新建tab</li>
+<li>,+th:    第一个tab</li>
+<li>,+tl:    最后一个tab</li>
+<li>,+tj/tn: 下一个tab</li>
+<li>,+tk/tp: 前一个tab</li>
+<li>,+te:    编辑tab</li>
+<li>,+td:    关闭tab</li>
+<li>,+tm:    tabm</li>
+<li>,+1:     切换到第1个tab(normal模式)</li>
+</ul>
+
+<h4 id="toc_6">插件配置</h4>
+
+<p>目前启用的插件支持类型:python, javascript, golang, php, ruby, shell, markdown, html, css, tmux</p>
+
+<h5 id="toc_7">syntastic/ale 语法检查</h5>
+
+<blockquote>
+<p>,+s:                                 打开/关闭当前所有错误标记</p>
+</blockquote>
+
+<h5 id="toc_8">ultisnippets 代码片段</h5>
+
+<p>snippets位于 ~/.vim/UltiSnips目录</p>
+
+<blockquote>
+<p>,+us:         编辑对应文件类型的代码片段<br/>
+Ctrl+j/k/n/p: 上下选取片段<br/>
+<tab>:        选择片段</p>
+</blockquote>
+
+<h5 id="toc_9">youcompleteme+delimitMate+closetag 自动补全</h5>
+
+<blockquote>
+<p>delimitmate插件自动补全单、双引号<br/>
+closetag插件自动补全html/xml标签</p>
+</blockquote>
+
+<h5 id="toc_10">nerdcommenter 快速注释</h5>
+
+<blockquote>
+<p>,+cc:          快速注释当前行/visual模式选中块<br/>
+,+cs:          注释时按块格式化(多行)<br/>
+,+c+<space>/i: 改变选中行的注释状态<br/>
+,+cu:          取消注释</p>
+</blockquote>
+
+<h5 id="toc_11">surround 快速修改/添加/删除环绕字符</h5>
+
+<blockquote>
+<p>cs]): 将]修改为)(必须使用后半括号)<br/>
+ysw&quot;: 在word前后添加双引号(大写W时表示被空格分开的字符串)<br/>
+ds&quot;:  删除&quot;</p>
+</blockquote>
+
+<h5 id="toc_12">vim-trailing-whitespace 删除行尾</h5>
+
+<blockquote>
+<p>,+<space>: 删除行尾空格</p>
+</blockquote>
+
+<h5 id="toc_13">vim-easy-align 快速赋值对齐</h5>
+
+<blockquote>
+<p>在normal模式下:<br/>
+,+a+ip+:/space/=:       ,+a打开easy-align插件,ip为inner paragraph,然后选择按:或者按空格或者按=对齐</p>
+
+<p>在visual模式下选中多行后:<br/>
+,+a+=:                    以=对齐<br/>
+,+a+2+=:                  以第2个=号对齐<br/>
+,+a+*+=:                  所有等号依次对齐</p>
+</blockquote>
+
+<h5 id="toc_14">vim-easymotion 快速移动光标</h5>
+
+<blockquote>
+<p>,+,+ w/f/h/j/k/l/: w:word,f:字母,h/j/k/l:上下左右<br/>
+,+,+f+e:           查找&#39;e&#39;,快速跳转定位到某个字符位置<br/>
+,+jd:              跳到函数定义,且分屏打开一个buffer<br/>
+,+gd:              跳到函数声明位置</p>
+</blockquote>
+
+<h5 id="toc_15">quick-scope 行内快速移动</h5>
+
+<blockquote>
+<p>f/F/t/T: 高效行内移动,normal模式</p>
+</blockquote>
+
+<h5 id="toc_16">matchit 快速匹配跳转</h5>
+
+<blockquote>
+<p>%: 快速匹配成对的标签,跳转</p>
+</blockquote>
+
+<h5 id="toc_17">vim-signature 自定义标记</h5>
+
+<blockquote>
+<p>m+[a-zA-Z]:  添加标记<br/>
+dm+[a-zA-Z]: 删除标记<br/>
+&#39;+[a-zA-Z]:  移动至标记位置<br/>
+m+/:         列出所有标记<br/>
+ m<Space>:   删除所有标记<br/>
+ m+.:        根据之前的标记添加新的标记</p>
+</blockquote>
+
+<h5 id="toc_18">vim-expand-region visual模式快速选中</h5>
+
+<blockquote>
+<p>v: 拓展选中区域<br/>
+V: 缩小选中区域</p>
+</blockquote>
+
+<h5 id="toc_19">vim-multiple-cursors 多光标编辑</h5>
+
+<blockquote>
+<p>ctrl+m: 为下一个关键词增加光标<br/>
+ctrl+p: 回到上一个关键词光标<br/>
+ctrl+x: 跳过当前关键词<br/>
+esc:    退出当前多光标模式<br/>
+c/x:    替换/删除<br/>
+shift+v切换到正常模式，然后i/I/a/A起作用</p>
+</blockquote>
+
+<h5 id="toc_20">ctrlp 文件搜索</h5>
+
+<blockquote>
+<p>,+p:              打开ctrlp窗口,显示当前文件夹及子文件夹文件<br/>
+,+f:              打开ctrlp窗口,显示最近打开的文件<br/>
+  搜索框出现后:<br/>
+  ctrl + j/k:   选择文件<br/>
+  ctrl + x:     在当前窗口水平分屏打开文件<br/>
+  ctrl + v:     在当前窗口垂直分屏打开文件<br/>
+  ctrl + t:     在tab中打开文件</p>
+</blockquote>
+
+<h5 id="toc_21">ctrlsf 多文件函数搜索</h5>
+
+<blockquote>
+<p>:                  打开ctrlsf窗口,并搜索其他包含光标下词的文件<br/>
+:+CtrlSF+要搜的词:   同上</p>
+
+<p>在CtrlSF窗口中:<br/>
+  <Space>:        在原窗口中打开目前光标指向的匹配文件<br/>
+  o/O:            在CtrlSF窗口中打开目前光标指向的匹配文件/且保持CtrlSF窗口一直打开<br/>
+  t/T:            以新tab方式打开目前光标指向的匹配文件/且保持CtrlSF窗口一直打开<br/>
+  p:              以预览方式打开目前光标指向的匹配文件<br/>
+  q:              关闭CtrlSF窗口/预览窗口<br/>
+  Ctrl+j:         光标移到下一个匹配位置<br/>
+  Ctrl+k:         光标移到上一个匹配位置</p>
+</blockquote>
+
+<h5 id="toc_22">ctrlp-funky 当前文件函数搜索</h5>
+
+<blockquote>
+<p>,+fu: 打开ctrlp-funky搜索窗口(当前文件函数列表)<br/>
+,+fU: 搜索当前光标下单词对应的函数</p>
+</blockquote>
+
+<h5 id="toc_23">fugitive+gitgutter git操作</h5>
+
+<blockquote>
+<p>默认只开启gitgutter:</p>
+
+<p>,+gs:                打开gitgutter,实时显示gitstatus</p>
+
+<p>fugitive:<br/>
+,+gb:                Gblame<br/>
+,+gs:                Gstatus<br/>
+,+gd:                Gdiff(冲突,换成,+ge)<br/>
+,+ge:                Gdiff<br/>
+,+gl:                Glog<br/>
+,+gc:                Gcommit<br/>
+,+gp:                Gpush</p>
+</blockquote>
+
+<h5 id="toc_24">gundo 查看/回到文件某个历史状态:</h5>
+
+<blockquote>
+<p>,+h</p>
+</blockquote>
+
+<h5 id="toc_25">nerdtree+nerdtreetabs 文件浏览:</h5>
+
+<blockquote>
+<p>,+n:                  打开/关闭nerdTree</p>
+
+<p>在nerdtree窗口中:<br/>
+  x:                收起当前目录树<br/>
+  X:                递归收起当前目录树<br/>
+  r:                刷新当前目录<br/>
+  R:                刷新根目录树<br/>
+  c:                将当前目录设为根节点<br/>
+  p:                跳到当前节点的父节点<br/>
+  P:                跳到root节点<br/>
+  o:                打开文件、目录、书签<br/>
+  s:                split水平分屏打开<br/>
+  v:                vsplit垂直分屏打开<br/>
+  t:                在tab中打开</p>
+</blockquote>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	 <div id="disqus_thread"></div>
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://0xn0p.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+	  
+	    <div id="disqus_thread"></div>
+	  
+
+	  
+
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+
+<script type="text/javascript">
+    var disqus_shortname = '0xn0p'; 
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+
+<script type="text/javascript">
+var disqus_shortname = '0xn0p'; 
+
+(function () {
+var s = document.createElement('script'); s.async = true;
+s.type = 'text/javascript';
+s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+(document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+  
+    
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><script type="text/x-mathjax-config">MathJax.Hub.Config({TeX: { equationNumbers: { autoNumber: "AMS" } }});</script>
+
+</body>
+</html>
