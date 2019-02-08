@@ -1,0 +1,930 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[0xn0p.org]]></title>
+  <link href="https://0xn0p.org/atom.xml" rel="self"/>
+  <link href="https://0xn0p.org/"/>
+  <updated>2019-02-08T23:10:38+08:00</updated>
+  <id>https://0xn0p.org/</id>
+  <author>
+    <name><![CDATA[]]></name>
+    
+  </author>
+  <generator uri="http://www.coderforart.com/">CoderForArt</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[自建私有云系列——自建DNS]]></title>
+    <link href="https://0xn0p.org/15496203170439.html"/>
+    <updated>2019-02-08T18:05:17+08:00</updated>
+    <id>https://0xn0p.org/15496203170439.html</id>
+    <content type="html"><![CDATA[
+<p>由于众所周知的原因，部分国家和地区的DNS服务不太正常。具体表现为访问部分网站会被rst，还有在访问正常内容中突然出现不可描述的小广告。如何干净、快速、正常的进行访问，已成为一个重要问题。</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">现行方案调研</h2>
+
+<p>目前的解决方案主要有3种：</p>
+
+<p>一种是采用各种无劫持的DNS服务提供商，比如阿里的223.5.5.5，电信的114.114.114.114，但是带来一个问题，这类DNS服务提供商对一些“无法访问”的网站DNS处理按照规定进行了处理。这对我们时常要进行的正常活动带来不便。而且，我们的XXX对外部的其他服务提供商进行了屏蔽，需要经常更换我们的设置，带来不便。</p>
+
+<p>第二种是采用各种jia密手段，绕过先行设置，进行DNS查询。比较有代表性的有<strong>DNSCrypt</strong>，<strong>DNS over HTTPS</strong>等。这类手段解决了我们的一些问题，但是对现在流行的CDN不友好，因为查询全部经过处理，外部查询的地址为“外部”访问的较快IP，对我们正常使用服务如某酷、某奇艺、某度云、某Q音乐等造成困扰，经常无法访问。</p>
+
+<p>第三种对第二种方案进行了优化，让内部的走内部，外部的走外部。这种方案比较靠谱，代表性的是<strong>ChinaDNS</strong>，但是对用户来说的缺点就是安装配置较为复杂，而且据反馈性能不够可靠，没有加密，还是单机版。</p>
+
+<p>所以还是决定在第三种方案的基础上自建相关服务对外使用。</p>
+
+<p>对于自建服务，比较成熟的方案有<strong>DNSCrypt server</strong>，比较有意思的是在寻找现成方案期间发现科大也有类似服务，名字叫<strong>neatDNS</strong>。</p>
+
+<h2 id="toc_1">服务部署与调整</h2>
+
+<p>经过一系列调研，确定采用<a href="%09https://github.com/jedisct1/dnscrypt-server-docker">dnscrypt-server-docker</a>的方案进行部署，好处有：完全满足方案二，避免各种干扰。部分满足方案三，通过调整容器内部unbound设置实现CDN友好，且通过设置可实现对某果的云服务进行加速、屏蔽广告等效果。部署方面也比较简单，几条命令可以搞定。</p>
+
+<h3 id="toc_2">通过docker部署服务</h3>
+
+<pre class="line-numbers"><code class="language-shell">docker run --name=dns-server -v /root/config/unbound/zones:/opt/unbound/etc/unbound/zones -p 443:443/udp -p 443:443/tcp --net=host jedisct1/dnscrypt-server init -N 0xn0p.org -E IP:443
+</code></pre>
+
+<p>一条命令搞定，需要注意的是：<br/>
+ - 挂载的<strong>/myconfig/zones</strong> 目录为unbound设置目录，用来配置内部访问的DNS查询，加速，屏蔽广告等，需替换成自己的目录。<br/>
+ - <strong>-N example.com</strong> 中的example.com是自己设置的域名，用于客户端DNSCrypt使用，可以随意调整。<br/>
+ - <strong>-E IP:port</strong> 中的IP要填写你VPS的公网IP，对外服务。<br/>
+下载安装完毕后会发现屏幕中出现一串地址和KEY，别急，先复制保存，留给备用。</p>
+
+<h3 id="toc_3">配置unbound</h3>
+
+<p>服务已经安装完毕了，接着我们对unbound进行配置，达到CDN友好、加速等目的。<br/>
+首先clone <a href="%09https://github.com/felixonmars/dnsmasq-china-list">dnsmasq-china-list</a> ，看名字也能看出来是干啥的了。根据介绍生成查询国内地址用的服务器和unbound的配置文件:</p>
+
+<pre class="line-numbers"><code class="language-shell">make SERVER=119.29.29.29 unbound
+</code></pre>
+
+<p>将生成的<strong>X.unbound.conf</strong> 复制到部署时指定的zone文件夹，启动服务。</p>
+
+<pre class="line-numbers"><code class="language-shell">cp .unbound.conf /myconfig/zones
+docker start dns-server
+</code></pre>
+
+<p>如果你需要服务器重启后自动启动服务，应该这样：</p>
+
+<pre class="line-numbers"><code class="language-shell">docker update --restart=unless-stopped dns-server
+</code></pre>
+
+<h3 id="toc_4">客户端配置</h3>
+
+<p>上面服务端已经部署完毕，我们开始设置本地的客户端。</p>
+
+<p>对于不同的系统，手机，路由等，安装参考<a href="https://github.com/jedisct1/dnscrypt-proxy/wiki/installation">DNSCrypt_Installation</a>。这里以mac举例：</p>
+
+<pre class="line-numbers"><code class="language-shell">brew install dnscrypt-proxy
+sudo brew services start dnscrypt-proxy ##安装为服务，开机启动，切记请用sudo,否则不能绑定53端口且不报错
+</code></pre>
+
+<p>通过brew安装，配置文件位于<strong>/usr/local/etc/dnscrypt-proxy.toml</strong>，我们对其进行编辑，将刚才部署的服务地址加进去。</p>
+
+<ul>
+<li>找到<strong>server_names=</strong> 所在行，将里面其他的名字去掉，然后写上我们自己的名字，比如：clairvoyant</li>
+<li>找到最后的<strong>static</strong>块，把提供的example注释掉，换成我们自己的，sdns地址用服务部署时复制保留的地址。</li>
+</ul>
+
+<p>重新启动服务:</p>
+
+<pre class="line-numbers"><code class="language-shell">sudo brew services start dnscrypt-proxy
+</code></pre>
+
+<p>测试是否安装成功：<br/>
+<img src="https://i.loli.net/2018/07/02/5b39176868c30.png" alt="dns"/></p>
+
+<p>观察resolver IP为设置的服务器地址。</p>
+
+<h2 id="toc_5">后记</h2>
+
+<p>这里其实有点小问题，因为考虑到自用的网络udp污染严重，如果国内IP直接通过unbound查询不走DNSCrypt的话会被污染、劫持，所以采用了所有IP全部走DNSCrypt的方案。如果网络较好，且个人加密，在本地利用dnsmaq分流加缓存+dnscrypt查询公有服务器（配置文件提供的各个示例）就能达到上述效果。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[vim配置]]></title>
+    <link href="https://0xn0p.org/15496203170484.html"/>
+    <updated>2019-02-08T18:05:17+08:00</updated>
+    <id>https://0xn0p.org/15496203170484.html</id>
+    <content type="html"><![CDATA[
+<p>fork 了 k-vim,调整了一些选项,记录配置,方便回忆使用。</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">安装</h2>
+
+<p>安装参考<a href="%09https://github.com/wklken/k-vim">k-vim</a>这个项目,需要注意的是:</p>
+
+<ul>
+<li><p>youcompleteme 每次升级或者重装都要重新要编译</p></li>
+<li><p>安装前记得装好系统依赖</p></li>
+<li><p>插件安装采用vim-plug: <code>PlugInstall/PlugUpdate/PlugClean/PlugUpgrade/PlugStatus</code></p></li>
+<li><p>具体安装步骤:</p>
+<p>1.git clone</p>
+<p>2.下载依赖</p>
+<p>ubuntu:</p>
+<pre class="line-numbers"><code class="language-bash"> sudo apt-get install ctags nodejs npm
+ sudo apt-get install build-essential cmake python-dev  #编译YCM自动补全插件依赖<br/>
+ sudo apt-get install silversearcher-ag<br/>
+ sudo npm install -g jslint<br/>
+ sudo npm install jshint -g<br/>
+ sudo npm install -g eslint eslint-plugin-standard eslint-plugin-promise eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-html babel-eslint<br/>
+ sudo pip install flake8 yapf
+</code></pre>
+<p>mac:</p>
+<pre class="line-numbers"><code class="language-bash"> brew install ctags
+ brew install the_silver_searcher<br/>
+ brew install node<br/>
+ npm install jshint -g<br/>
+ npm install jslint -g<br/>
+ npm install -g eslint eslint-plugin-standard eslint-plugin-promise eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-html babel-eslint<br/>
+ pip install flake8 yapf
+</code></pre>
+<p>3.<code>chmod +x install.sh &amp;&amp; sudo ./install.sh</code></p></li>
+</ul>
+
+<h2 id="toc_1">删除</h2>
+
+<p><code>cd ~ &amp;&amp; rm -rf .vim .vimrc .vimrc.bundles &amp;&amp; cd -</code></p>
+
+<h2 id="toc_2">使用说明</h2>
+
+<h4 id="toc_3">自定义快捷键</h4>
+
+<ul>
+<li>leader键:    ,</li>
+<li>,+z+z:       代码折叠(默认为indent模式)</li>
+<li>Ctrl-n:      相对/绝对行号切换</li>
+<li>j+k:         连续按调整为esc</li>
+<li>F2:          行号开关,用于复制代码</li>
+<li>F3:          显示可打印字符开关</li>
+<li>F4:          换行开关</li>
+<li>F5:          粘贴模式开关,用于有格式代码的粘贴</li>
+<li>F6:          语法开关(关闭语法加快文件显示速度)</li>
+<li>F9:          打开标签导航,导航文件内函数,变量等(没有python支持)</li>
+<li>F10:         运行当前文件(quickrun)</li>
+<li>,+s+a:       全选</li>
+<li>,+v:         选中段落</li>
+<li>5j/k:        下/上移5行(相对行号模式)</li>
+<li>Ctrl+e/y:    上/下移5行</li>
+<li>H/L:         行首/行尾(normal模式)</li>
+<li>Ctrl+a/e:    行首/行尾(命令行模式)</li>
+<li><space>和/:  搜索</li>
+<li>&lt;/&gt;:         快速调整缩进(visual模式)</li>
+<li>Y:           复制到行尾</li>
+<li>,+y:         将选中区域复制到系统剪贴板</li>
+<li>&#39;#&#39;/*:       搜索字/词</li>
+<li>dal/yal/cil: 删除/粘贴/替换整行</li>
+<li>dae/yae/cie: 删除/粘贴/替换全部</li>
+<li>dai/yai/cii: 删除/粘贴/替换缩进</li>
+<li>c/d+i+&quot;:     替换/删除&quot;中的字符</li>
+<li>,+g:         python代码格式化</li>
+</ul>
+
+<h4 id="toc_4">分屏操作</h4>
+
+<ul>
+<li>:sp/:vsp:      上下/左右分屏</li>
+<li>Ctrl+w+-/+:   调整分屏大小</li>
+<li>Ctrl+j/k/h/l: 分屏移动</li>
+</ul>
+
+<h4 id="toc_5">tab操作</h4>
+
+<ul>
+<li>Ctrl+t:  新建tab</li>
+<li>,+th:    第一个tab</li>
+<li>,+tl:    最后一个tab</li>
+<li>,+tj/tn: 下一个tab</li>
+<li>,+tk/tp: 前一个tab</li>
+<li>,+te:    编辑tab</li>
+<li>,+td:    关闭tab</li>
+<li>,+tm:    tabm</li>
+<li>,+1:     切换到第1个tab(normal模式)</li>
+</ul>
+
+<h4 id="toc_6">插件配置</h4>
+
+<p>目前启用的插件支持类型:python, javascript, golang, php, ruby, shell, markdown, html, css, tmux</p>
+
+<h5 id="toc_7">syntastic/ale 语法检查</h5>
+
+<blockquote>
+<p>,+s:                                 打开/关闭当前所有错误标记</p>
+</blockquote>
+
+<h5 id="toc_8">ultisnippets 代码片段</h5>
+
+<p>snippets位于 ~/.vim/UltiSnips目录</p>
+
+<blockquote>
+<p>,+us:         编辑对应文件类型的代码片段<br/>
+Ctrl+j/k/n/p: 上下选取片段<br/>
+<tab>:        选择片段</p>
+</blockquote>
+
+<h5 id="toc_9">youcompleteme+delimitMate+closetag 自动补全</h5>
+
+<blockquote>
+<p>delimitmate插件自动补全单、双引号<br/>
+closetag插件自动补全html/xml标签</p>
+</blockquote>
+
+<h5 id="toc_10">nerdcommenter 快速注释</h5>
+
+<blockquote>
+<p>,+cc:          快速注释当前行/visual模式选中块<br/>
+,+cs:          注释时按块格式化(多行)<br/>
+,+c+<space>/i: 改变选中行的注释状态<br/>
+,+cu:          取消注释</p>
+</blockquote>
+
+<h5 id="toc_11">surround 快速修改/添加/删除环绕字符</h5>
+
+<blockquote>
+<p>cs]): 将]修改为)(必须使用后半括号)<br/>
+ysw&quot;: 在word前后添加双引号(大写W时表示被空格分开的字符串)<br/>
+ds&quot;:  删除&quot;</p>
+</blockquote>
+
+<h5 id="toc_12">vim-trailing-whitespace 删除行尾</h5>
+
+<blockquote>
+<p>,+<space>: 删除行尾空格</p>
+</blockquote>
+
+<h5 id="toc_13">vim-easy-align 快速赋值对齐</h5>
+
+<blockquote>
+<p>在normal模式下:<br/>
+,+a+ip+:/space/=:       ,+a打开easy-align插件,ip为inner paragraph,然后选择按:或者按空格或者按=对齐</p>
+
+<p>在visual模式下选中多行后:<br/>
+,+a+=:                    以=对齐<br/>
+,+a+2+=:                  以第2个=号对齐<br/>
+,+a+*+=:                  所有等号依次对齐</p>
+</blockquote>
+
+<h5 id="toc_14">vim-easymotion 快速移动光标</h5>
+
+<blockquote>
+<p>,+,+ w/f/h/j/k/l/: w:word,f:字母,h/j/k/l:上下左右<br/>
+,+,+f+e:           查找&#39;e&#39;,快速跳转定位到某个字符位置<br/>
+,+jd:              跳到函数定义,且分屏打开一个buffer<br/>
+,+gd:              跳到函数声明位置</p>
+</blockquote>
+
+<h5 id="toc_15">quick-scope 行内快速移动</h5>
+
+<blockquote>
+<p>f/F/t/T: 高效行内移动,normal模式</p>
+</blockquote>
+
+<h5 id="toc_16">matchit 快速匹配跳转</h5>
+
+<blockquote>
+<p>%: 快速匹配成对的标签,跳转</p>
+</blockquote>
+
+<h5 id="toc_17">vim-signature 自定义标记</h5>
+
+<blockquote>
+<p>m+[a-zA-Z]:  添加标记<br/>
+dm+[a-zA-Z]: 删除标记<br/>
+&#39;+[a-zA-Z]:  移动至标记位置<br/>
+m+/:         列出所有标记<br/>
+ m<Space>:   删除所有标记<br/>
+ m+.:        根据之前的标记添加新的标记</p>
+</blockquote>
+
+<h5 id="toc_18">vim-expand-region visual模式快速选中</h5>
+
+<blockquote>
+<p>v: 拓展选中区域<br/>
+V: 缩小选中区域</p>
+</blockquote>
+
+<h5 id="toc_19">vim-multiple-cursors 多光标编辑</h5>
+
+<blockquote>
+<p>ctrl+m: 为下一个关键词增加光标<br/>
+ctrl+p: 回到上一个关键词光标<br/>
+ctrl+x: 跳过当前关键词<br/>
+esc:    退出当前多光标模式<br/>
+c/x:    替换/删除<br/>
+shift+v切换到正常模式，然后i/I/a/A起作用</p>
+</blockquote>
+
+<h5 id="toc_20">ctrlp 文件搜索</h5>
+
+<blockquote>
+<p>,+p:              打开ctrlp窗口,显示当前文件夹及子文件夹文件<br/>
+,+f:              打开ctrlp窗口,显示最近打开的文件<br/>
+  搜索框出现后:<br/>
+  ctrl + j/k:   选择文件<br/>
+  ctrl + x:     在当前窗口水平分屏打开文件<br/>
+  ctrl + v:     在当前窗口垂直分屏打开文件<br/>
+  ctrl + t:     在tab中打开文件</p>
+</blockquote>
+
+<h5 id="toc_21">ctrlsf 多文件函数搜索</h5>
+
+<blockquote>
+<p>:                  打开ctrlsf窗口,并搜索其他包含光标下词的文件<br/>
+:+CtrlSF+要搜的词:   同上</p>
+
+<p>在CtrlSF窗口中:<br/>
+  <Space>:        在原窗口中打开目前光标指向的匹配文件<br/>
+  o/O:            在CtrlSF窗口中打开目前光标指向的匹配文件/且保持CtrlSF窗口一直打开<br/>
+  t/T:            以新tab方式打开目前光标指向的匹配文件/且保持CtrlSF窗口一直打开<br/>
+  p:              以预览方式打开目前光标指向的匹配文件<br/>
+  q:              关闭CtrlSF窗口/预览窗口<br/>
+  Ctrl+j:         光标移到下一个匹配位置<br/>
+  Ctrl+k:         光标移到上一个匹配位置</p>
+</blockquote>
+
+<h5 id="toc_22">ctrlp-funky 当前文件函数搜索</h5>
+
+<blockquote>
+<p>,+fu: 打开ctrlp-funky搜索窗口(当前文件函数列表)<br/>
+,+fU: 搜索当前光标下单词对应的函数</p>
+</blockquote>
+
+<h5 id="toc_23">fugitive+gitgutter git操作</h5>
+
+<blockquote>
+<p>默认只开启gitgutter:</p>
+
+<p>,+gs:                打开gitgutter,实时显示gitstatus</p>
+
+<p>fugitive:<br/>
+,+gb:                Gblame<br/>
+,+gs:                Gstatus<br/>
+,+gd:                Gdiff(冲突,换成,+ge)<br/>
+,+ge:                Gdiff<br/>
+,+gl:                Glog<br/>
+,+gc:                Gcommit<br/>
+,+gp:                Gpush</p>
+</blockquote>
+
+<h5 id="toc_24">gundo 查看/回到文件某个历史状态:</h5>
+
+<blockquote>
+<p>,+h</p>
+</blockquote>
+
+<h5 id="toc_25">nerdtree+nerdtreetabs 文件浏览:</h5>
+
+<blockquote>
+<p>,+n:                  打开/关闭nerdTree</p>
+
+<p>在nerdtree窗口中:<br/>
+  x:                收起当前目录树<br/>
+  X:                递归收起当前目录树<br/>
+  r:                刷新当前目录<br/>
+  R:                刷新根目录树<br/>
+  c:                将当前目录设为根节点<br/>
+  p:                跳到当前节点的父节点<br/>
+  P:                跳到root节点<br/>
+  o:                打开文件、目录、书签<br/>
+  s:                split水平分屏打开<br/>
+  v:                vsplit垂直分屏打开<br/>
+  t:                在tab中打开</p>
+</blockquote>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[自建私有云系列——自建RSS]]></title>
+    <link href="https://0xn0p.org/15496203170535.html"/>
+    <updated>2019-02-08T18:05:17+08:00</updated>
+    <id>https://0xn0p.org/15496203170535.html</id>
+    <content type="html"><![CDATA[
+<p>自从 Goolgle reader 下线后，rss 就走向了没落。互联网游原门户模式向 app 模式发展，博客也转换为公众号、专栏等。然而，我们常用的服务分散在各个网站、各个 app 里，十分不便。采取 rss 的方式，可统一集中内容、消息来源，便于整理、查阅。</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">现有方案调研</h2>
+
+<h3 id="toc_1">阅读器</h3>
+
+<p>阅读器项目做的人还是很多的，纯自建推荐 <em>tiny tiny RSS</em>，但是没有移动客户端，只能通过网页访问。<br/>
+如果不是纯自建，首推 <em>inoreader</em>，支持网页版、ios、安卓，免费版功能已相当强大。如果是在MAC上， <em>Reeder</em> 当仁不让。</p>
+
+<h3 id="toc_2">订阅源抓取</h3>
+
+<p>阅读器有了，但阅读内容的获取涉及各个网站，各种服务，就比较麻烦。比如微信公众号的抓取就很难，虽然也有一些方案，但都是专项抓取，不成体系，部署麻烦。所以再次推荐<a href="%09https://rss.0xn0p.org/">RSS Hub</a>。自带各种订阅源和抓取策略，你可以让他提醒你天气，提醒你单位有了新通知，提醒你主播开播，提醒你追的剧又更新了，提醒你明天下雨，提醒你想租房的地方有了新的房源，提醒你想买的东西又降价了，提醒你快递到了，等等等等。当然，最主要的还是为你推送你关注的公众号、你订阅的知乎日报等内容。</p>
+
+<h2 id="toc_3">服务部署</h2>
+
+<p>RSS Hub 的部署非常简单，官网讲的非常清楚了，我们依旧是非常省事的 Docker 部署：</p>
+
+<pre class="line-numbers"><code class="language-shell">$ docker pull diygod/rsshub
+$ docker run -d --name rsshub -p 1200:1200 diygod/rsshub
+</code></pre>
+
+<p>在浏览器中打开 <em>http://vps地址:1200</em> ，即可访问主页。</p>
+
+<h2 id="toc_4">使用</h2>
+
+<p>主页上有文档说明，只需要自己生成你想订阅的内容的地址，并将地址填到 RSS 阅读器中即可享受订阅全世界的乐趣。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[tmux配置]]></title>
+    <link href="https://0xn0p.org/15496203170585.html"/>
+    <updated>2019-02-08T18:05:17+08:00</updated>
+    <id>https://0xn0p.org/15496203170585.html</id>
+    <content type="html"><![CDATA[
+<p>tmux 是一个优秀的终端复用器类自由软件，功能类似GNU Screen，但使用BSD 许可发布。用户可以通过tmux 在一个终端内管理多个分离的会话，窗口及面板，对于同时使用多个命令行，或多个任务时非常方便。</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">系统</h2>
+
+<ul>
+<li>前缀键(prefix): ctrl+a</li>
+<li>关闭服务器，所有的会话都将关闭: tmux kill-server</li>
+<li>命令行模式，直接输入命令: prefix+:</li>
+<li>复制模式(按q退出): prefix+[  进入复制模式，调整光标位置，按v键(mac)/空格键(*nix)开始复制，h/j/k/l移动光标，y键复制文本到系统剪切板并退出复制模式</li>
+<li>粘贴模式: prefix+]/command(ctrl)+v</li>
+<li>自动重载配置: prefix+r</li>
+</ul>
+
+<h2 id="toc_1">会话</h2>
+
+<ul>
+<li>新建会话: tmux new -s session-name</li>
+<li>断开会话: prefix+d</li>
+<li>进入之前断开的会话: tmux a -t session-name</li>
+<li>关闭会话: tmux kill-session -t session-name</li>
+<li>查看所有会话: tmux ls/prefix+s</li>
+</ul>
+
+<h2 id="toc_2">窗口</h2>
+
+<ul>
+<li>新建窗口: prefix+c</li>
+<li>切换窗口: prefix+0-9</li>
+<li>切换到上一个窗口: prefix+p</li>
+<li>切换到下一个窗口: prefix+n</li>
+<li>打开窗口列表: prefix+w</li>
+<li>重命名当前窗口: prefix+,</li>
+<li>修改窗口编号: prefix+.</li>
+<li>快速定位窗口: prefix+f</li>
+</ul>
+
+<h2 id="toc_3">面板</h2>
+
+<ul>
+<li>左右分割窗口为2个面板(画竖线): prefix+|</li>
+<li>上下分割窗口为2个面板(画横线): prefix+-</li>
+<li>关闭当前面板: prefix+x</li>
+<li>最大化当前面板: prefix+z(再按一次还原)</li>
+<li>显示面板编号，快速切换面板: prefix+q</li>
+<li>切换面板: prefix+h/j/k/l</li>
+<li>调整面板大小: prefix+&gt;/&lt;/_/+</li>
+<li>合并指定窗口(window)指定面板(第一个面板)到当前窗口: prefix+:进入命令行模式，join-pane -s [session_name]:[window].[pane]</li>
+<li>多面板批量执行: prefix+:进入命令行模式，set synchronize-panes</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[自建私有云系列——自建分享网盘]]></title>
+    <link href="https://0xn0p.org/15496203170628.html"/>
+    <updated>2019-02-08T18:05:17+08:00</updated>
+    <id>https://0xn0p.org/15496203170628.html</id>
+    <content type="html"><![CDATA[
+<p>本文实现了一个低成本网盘方案。</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">需求分析</h2>
+
+<ol>
+<li>现有网盘越来越贵，限速越来越严重</li>
+<li>网盘经常屏蔽我们想下载的东西</li>
+<li>隐私文件放在公用网盘不托底</li>
+<li>网盘没有好用的 Linux 版本</li>
+</ol>
+
+<h2 id="toc_1">现有方案调研</h2>
+
+<p>现有的网盘方案中，比较成熟好用的有 2 个，一个是 <a href="%09https://nextcloud.com/">nextcloud</a>，还有一个是 <a href="%09https://www.seafile.com/home/">seafile</a>。这两套网盘方案桌面端均支持 Windows、MAC、和 Linux，移动端均支持 ios、安卓。其中，seafile 是国人团队开发，自带中文支持，部署也比较方便。主要的不足有 3 个：</p>
+
+<ul>
+<li>部署麻烦，均要安装 php、mySQL 等一堆依赖</li>
+<li>流量恐怖，服务器部署，网盘下载、上传流量很大</li>
+<li>涉及到的服务器成本高，一般 VPS 没有足够网盘使用的大量的存储空间，有空间的速度慢，挑选到一款好用稳定的服务器很难。</li>
+</ul>
+
+<p>相应的换算下来，还不如各类付费 OSS，但是便宜好用的 OSS 又抢不到(比如 Vultr 里的 Storage 常年缺货)，遂考虑使用微软 OneDrive 自建网盘。</p>
+
+<h2 id="toc_2">利用 OneDrive 建立个人分享网盘</h2>
+
+<p>需要重点说明的是，微软的 OneDrive 和 OneDrive Business 不是一个产品，除了空间大小不同外，后者有隐藏的速度加成。我们建立网盘的方案也是基于 Bussiness 版本，具体购买注意事项请百度。</p>
+
+<h3 id="toc_3">上传/客户端</h3>
+
+<p>OneDrive 客户端有 MAC 和 Windows 版本，linux 版本可以用<a href="%09https://rclone.org/">rclone</a>，这货支持的网盘基本覆盖国外主流服务商，开发更新也很快。如果你用 Linux 做工作站，再推荐 2 个客户端，一个是安装成服务的<a href="%09https://github.com/abraunegg/onedrive">https://github.com/abraunegg/onedrive</a> ， 还有一个是纯 BASH脚本的<a href="%09https://github.com/iiiiiii1/OneDrive">https://github.com/iiiiiii1/OneDrive</a> ， 纯脚本的自动化弱些，需要手动上传。</p>
+
+<h3 id="toc_4">展示/服务端</h3>
+
+<p>采用 <a href="%09https://github.com/donwa/oneindex">OneIndex</a>实现目录展示、在线播放、文件预览、文件夹加密等功能。只依赖PHP 5.6+ ，PHP 打开curl支持。<br/>
+具体步骤：</p>
+
+<h4 id="toc_5">拉取 Docker 镜像：</h4>
+
+<pre class="line-numbers"><code class="language-shell">$ docker pull yinaoxiong/oneindex
+</code></pre>
+
+<h4 id="toc_6">运行容器：</h4>
+
+<pre class="line-numbers"><code class="language-shell">$ docker run -d -p {open port}:80 --name {container name} --restart=always yinaoxiong/oneindex
+</code></pre>
+
+<p>访问你 VPS 映射的端口，按提示完成安装。这里放张动图。<br/>
+<img src="%09https://drive.0xn0p.org/blog_image/install.gif" alt=""/><br/>
+需要注意的是，<code>client_id</code> 和 <code>client_secret</code> 是分 2 步获取。</p>
+
+<h4 id="toc_7">OneIndex 具体使用</h4>
+
+<h5 id="toc_8">特殊文件实现功能</h5>
+
+<p>主要有<code>README.md</code>、<code>HEAD.md</code> 、 <code>.password</code> 3 种特殊文件。可以参考<a href="%09https://github.com/donwa/oneindex/tree/files">https://github.com/donwa/oneindex/tree/files</a></p>
+
+<p><strong>在文件夹底部添加说明:</strong></p>
+
+<blockquote>
+<p>在onedrive的文件夹中添加<code> README.md </code>文件，使用markdown语法。  </p>
+</blockquote>
+
+<p><strong>在文件夹头部添加说明:</strong>  </p>
+
+<blockquote>
+<p>在onedrive的文件夹中添加<code>HEAD.md</code> 文件，使用markdown语法。  </p>
+</blockquote>
+
+<p><strong>加密文件夹:</strong>  </p>
+
+<blockquote>
+<p>在onedrive的文件夹中添加<code>.password</code>文件，填入密码，密码不能为空。  </p>
+</blockquote>
+
+<p><strong>直接输出网页:</strong>  </p>
+
+<blockquote>
+<p>在onedrive的文件夹中添加<code>index.html</code> 文件，程序会直接输出网页而不列目录。  </p>
+</blockquote>
+
+<p>配合 文件展示设置-直接输出 效果更佳  </p>
+
+<h5 id="toc_9">清除缓存:</h5>
+
+<pre class="line-numbers"><code class="language-shell">$ php one.php cache:clear
+</code></pre>
+
+<h5 id="toc_10">刷新缓存:</h5>
+
+<pre class="line-numbers"><code class="language-shell">$ php one.php cache:refresh
+</code></pre>
+
+<h5 id="toc_11">刷新令牌:</h5>
+
+<pre class="line-numbers"><code class="language-shell">$ php one.php token:refresh
+</code></pre>
+
+<h5 id="toc_12">上传文件:</h5>
+
+<pre class="line-numbers"><code class="language-shell">$ php one.php upload:file 本地文件 [onedrive文件]
+</code></pre>
+
+<h5 id="toc_13">上传文件夹:</h5>
+
+<pre class="line-numbers"><code class="language-shell">$ php one.php upload:folder 本地文件夹 [onedrive文件夹]
+</code></pre>
+
+<p><strong>示例</strong></p>
+
+<blockquote>
+<p>//上传demo.zip 到onedrive 根目录<br/><br/>
+$ php one.php upload:file demo.zip  </p>
+
+<p>//上传demo.zip 到onedrive /test/目录<br/><br/>
+$ php one.php upload:file demo.zip /test/  </p>
+
+<p>//上传demo.zip 到onedrive /test/目录并命名为 d.zip<br/><br/>
+$ php one.php upload:file demo.zip /test/d.zip  </p>
+
+<p>//上传up/ 到onedrive /test/<br/><br/>
+$ php one.php upload:file up/ /test/</p>
+</blockquote>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Mac全新安装记录]]></title>
+    <link href="https://0xn0p.org/15496203170667.html"/>
+    <updated>2019-02-08T18:05:17+08:00</updated>
+    <id>https://0xn0p.org/15496203170667.html</id>
+    <content type="html"><![CDATA[
+<p>记录下新到手的MAC应该进行的配置。<br/>
+最后更新：2019 年 02 月 08 日</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">0. 基本设置</h2>
+
+<h3 id="toc_1">0.1 显示资源库、系统盘：</h3>
+
+<p>访达-&gt;偏好设置-&gt;边栏</p>
+
+<h3 id="toc_2">0.2 显示隐藏的/usr等目录：</h3>
+
+<pre class="line-numbers"><code class="language-shell">$ defaults write com.apple.finder AppleShowAllFiles -bool true
+</code></pre>
+
+<h3 id="toc_3">0.3 设置允许安装任何来源的程序:</h3>
+
+<pre class="line-numbers"><code class="language-shell">$ sudo spctl --master-disable
+</code></pre>
+
+<p>访达-&gt;偏好设置-&gt;安全性与隐私-&gt;左下角小黄锁</p>
+
+<h2 id="toc_4">1. 基础环境</h2>
+
+<h3 id="toc_5">1.1 包管理—homebrew</h3>
+
+<pre class="line-numbers"><code class="language-shell">$ /usr/bin/ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;
+</code></pre>
+
+<h3 id="toc_6">1.2 终端模拟器—iterm2</h3>
+
+<pre class="line-numbers"><code class="language-shell">$ brew install iterm2
+</code></pre>
+
+<p><strong>设置iterm2为默认终端模拟器：</strong></p>
+
+<blockquote>
+<p>iTerm2 -&gt; Make iTerm2 Default Term</p>
+</blockquote>
+
+<p><strong>设置快捷键：</strong></p>
+
+<blockquote>
+<p>preference-&gt;Keys-&gt;Show/hide iTerm2 with a system-wide hotkey,将热键设置为command+. </p>
+</blockquote>
+
+<p><strong>iterm2的特殊命令:</strong></p>
+
+<pre class="line-numbers"><code class="language-shell">$ imgcat filename    //Displays the image inline.
+
+$ imgls              //Shows a directory listing with image thumbnails
+
+$ it2attention start|stop|fireworks   //Gets your attention
+ 
+$ it2check           //Checks if the terminal is iTerm2
+ 
+$ it2copy [filename]() //Copies to the pasteboard
+
+$ it2dl filename     //Downloads the specified file, saving it in your Downloads folder.
+
+$ it2setcolor ...    //Changes individual color settings or loads a color preset
+
+$ it2setkeylabel ... //Changes Touch Bar function key labels
+
+$ it2ul              //Uploads a file
+
+$ it2universion      //Sets the current unicode version
+</code></pre>
+
+<h3 id="toc_7">1.3 网盘配置同步—onedrive、baidunetdisk</h3>
+
+<pre class="line-numbers"><code class="language-shell">$ brew cask install onedrive
+
+$ brew cask install baidunetdisk
+</code></pre>
+
+<h3 id="toc_8">1.4 shell—zsh+oh-my-zsh</h3>
+
+<pre class="line-numbers"><code class="language-shell">$ brew install zsh
+
+$ sh -c &quot;$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)&quot;
+
+$ brew install zsh-autosuggestions zsh-completions zsh-syntax-highlighting zsh-git-prompt
+
+$ brew cask install qlcolorcode qlmarkdown qlprettypatch quicklook-csv quicklook-json webpquicklook
+
+$ ln -s  /Users/lq/OneDrive - 0xn0p.org/dotfile/zshrc /.zshrc
+</code></pre>
+
+<h3 id="toc_9">1.5 多路复用—tmux</h3>
+
+<pre class="line-numbers"><code class="language-shell">$ brew install tmux
+
+$ ln -s  /Users/lq/OneDrive - 0xn0p.org/dotfile/tmux.conf  /.tmux.conf
+</code></pre>
+
+<h3 id="toc_10">1.6 远程登录—mosh</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew install mosh
+</code></pre>
+
+<h3 id="toc_11">1.7 命令行编辑器—vim+k-vim</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew install vim —with-override-system-vi
+
+$ ln -s  /Users/lq/OneDrive - 0xn0p.org/k-vim /.vim
+
+$ ln -s  /Users/lq/OneDrive - 0xn0p.org/k-vim/vimrc /.vimrc
+
+$ ln -s  /Users/lq/OneDrive - 0xn0p.org/k-vim/vimrc.bundles  /.vimrc.bundles
+</code></pre>
+
+<h3 id="toc_12">1.8 科学上网—v2ray+surge/clash</h3>
+
+<pre class="line-numbers"><code class="language-shell">$ https://github.com/v2ray/v2ray-core/releases
+
+$ /Downloads/v2ray-v3.29-macos/v2ray --config /OneDrive\ -\ 0xn0p.org/dotfile/v2ray_client.json
+
+$ brew cask install clashx
+
+$ cp /OneDrive\ -\ 0xn0p.org/dotfile/clash/config.yml /clash安装位置
+</code></pre>
+
+<h3 id="toc_13">1.9 编程语言—python3+golang</h3>
+
+<pre class="line-numbers"><code class="language-shell">$ brew install python          //python3.XX
+
+$ brew install python@2
+
+$ pip3 install pipenv
+</code></pre>
+
+<pre class="line-numbers"><code class="language-shell">$ brew install go
+</code></pre>
+
+<h3 id="toc_14">1.10 各项服务</h3>
+
+<h4 id="toc_15">1.10.1 docker</h4>
+
+<pre class="line-numbers"><code class="language-http">https://docs.docker.com/docker-for-mac/install/
+</code></pre>
+
+<p>国内镜像加速:<a href="%09www.daocloud.io">www.daocloud.io</a>注册账户，后台获得镜像地址，填入daemon。<br/>
+docker官方的中国加速为：<code>https://registry.docker-cn.com</code></p>
+
+<p><strong>docker获取容器IP地址</strong></p>
+
+<pre class="line-numbers"><code class="language-bash">docker inspect -f &#39;{{.Name}} - {{.NetworkSettings.IPAddress }}&#39; $(docker ps -aq)
+</code></pre>
+
+<h4 id="toc_16">1.10.2 mysql</h4>
+
+<pre class="line-numbers"><code class="language-bash">$ docker pull percona
+ //启动一个实例
+$ docker run --name clairvoyant -v /OneDrive\ -\ 0xn0p.org/dotfile:/etc/mysql/conf.d -v /hack/project/clairvoyant/data:/var/lib/mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=my-secret-pw -d percona:latest 
+//进入容器shell
+$ docker exec -it clairvoyant bash
+//查看日志
+$ docker logs clairvoyant
+//其他容器连接
+$ docker run --name some-app --link clairvoyant:mysql -d application-that-uses-mysql
+</code></pre>
+
+<h4 id="toc_17">1.10.3 clickhouse</h4>
+
+<pre class="line-numbers"><code class="language-bash">$ docker run -d --name clairvoyant-clickhouse-server --ulimit nofile=262144:262144 -v /OneDrive\ -\ 0xn0p.org/dotfile/clickhouse_config.xml:/etc/clickhouse-server/config.xml -v /OneDrive\ -\ 0xn0p.org/dotfile/clickhouse_users.xml:/etc/clickhouse-server/clickhouse_users.xml -v /hack/project/clairvoyant/clickhousedata:/data/clickhouse -p 8123:8123 -p 9000:9000 -p 9009:9009 yandex/clickhouse-server    //启动服务端实例
+
+$  docker run -it --rm --link clairvoyant-clickhouse-server:clickhouse-server yandex/clickhouse-client --host clickhouse-server --user default --password XXXX  //使用客户端连接
+
+$ CREATE TABLE IF NOT EXISTS db.article_clientuser_sum 
+ENGINE = MergeTree 
+ORDER BY id AS 
+SELECT * 
+FROM mysql(&#39;host:port&#39;, &#39;db&#39;, &#39;article_clientuser_sum&#39;, &#39;user&#39;, &#39;password&#39;)  //从mysql直接导入数据
+
+//日志在指定的clickhousedata/logs目录下
+</code></pre>
+
+<h2 id="toc_18">2. 日常功能</h2>
+
+<h3 id="toc_19">2.1 浏览器—chrome</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install google-chrome
+</code></pre>
+
+<h3 id="toc_20">2.2 md文本编辑—Typora/Mweb</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install typora
+</code></pre>
+
+<h3 id="toc_21">2.3 笔记整理—wiznote/gitnote</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install wiznote gitnote
+</code></pre>
+
+<h3 id="toc_22">2.4 思维导图/大纲笔记—幕布/MindNote</h3>
+
+<p><a href="%09https://mubu.com/apps">https://mubu.com/apps</a></p>
+
+<h3 id="toc_23">2.5 视频/音乐播放—iina+qqmusic</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install iina qqmusic
+</code></pre>
+
+<h3 id="toc_24">2.6 IM/通信—wechat+telegram+qq</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install wechat telegram qq
+</code></pre>
+
+<h3 id="toc_25">2.7 RSS阅读—Reeder</h3>
+
+<p>App Store</p>
+
+<h3 id="toc_26">2.8 截图工具—截图</h3>
+
+<p>Appstore</p>
+
+<h3 id="toc_27">2.9 图床工具—PicGo</h3>
+
+<p><a href="%09https://github.com/Molunerfinn/PicGo/releases">https://github.com/Molunerfinn/PicGo/releases</a></p>
+
+<h2 id="toc_28">3. 效率工具</h2>
+
+<h3 id="toc_29">3.1 NTFS读写—Mounty</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install mounty
+</code></pre>
+
+<h3 id="toc_30">3.2 密码管理—1password</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install 1password
+</code></pre>
+
+<h3 id="toc_31">3.3 选中/右键增强—Popclip</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install popclip
+</code></pre>
+
+<p><strong>插件：</strong> <a href="http://pilotmoon.com/popclip/extensions/">http://pilotmoon.com/popclip/extensions/</a></p>
+
+<h3 id="toc_32">3.4 快速启动—Alfred</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install alfred
+</code></pre>
+
+<h3 id="toc_33">3.5 系统维护清理—cleanmymac/Ccleaner</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install cleanmymac/ccleaner
+</code></pre>
+
+<h3 id="toc_34">3.6 视频格式转换—HandBrake</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install handbrake
+</code></pre>
+
+<h3 id="toc_35">3.7 待办清单—WunderList</h3>
+
+<p>Appstore</p>
+
+<h3 id="toc_36">3.8 窗口速调—Magnet</h3>
+
+<p>Appstore</p>
+
+<h3 id="toc_37">3.9 任务栏图标管理—Vanilla</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install vanilla
+</code></pre>
+
+<h3 id="toc_38">3.10 压缩解压—eZip</h3>
+
+<pre class="line-numbers"><code class="language-shell">brew cask install ezip
+</code></pre>
+
+<h3 id="toc_39">3.11 快速预览-quicklook-plugins</h3>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlimagesize webpquicklook suspicious-package quicklookase qlvideo
+</code></pre>
+
+<h2 id="toc_40">4. 清理缓存</h2>
+
+<pre class="line-numbers"><code class="language-bash">$ brew cleanup
+
+$ brew cask cleanup
+</code></pre>
+
+]]></content>
+  </entry>
+  
+</feed>

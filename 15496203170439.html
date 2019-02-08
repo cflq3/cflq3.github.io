@@ -1,0 +1,244 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>  
+	  
+  	自建私有云系列——自建DNS - 0xn0p.org
+  	
+	</title>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="atom.xml" rel="alternate" title="0xn0p.org" type="application/atom+xml">
+
+	<link href="asset/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="asset/stylesheets/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<script src="asset/javascripts/jquery.min.js"></script>
+	<script src="asset/highlightjs/highlight.pack.js"></script>
+	<link href="asset/highlightjs/styles/solarized_dark.css" media="screen, projection" rel="stylesheet" type="text/css">
+<script>hljs.initHighlightingOnLoad();</script>
+
+	<!--[if lt IE 9]><script src="asset/javascripts/html5.js"></script><![endif]-->
+	<!-- <link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'> -->
+	<style type="text/css">
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Nunito-Light'), url(asset/font/1TiHc9yag0wq3lDO9cw0voX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nunito-Regular'), url(asset/font/6TbRXKWJjpj6V2v_WyRbMX-_kf6ByYO6CLYdB4HQE-Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* latin */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nunito-Bold'), url(asset/font/TttUCfJ272GBgSKaOaD7KoX0hVgzZQUfRDuZrPvH3D8.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+	</style>
+	
+	<style type="text/css">
+	.container .left-col{ opacity: 1;}
+	#pagenavi a{ font-size: 1.3em;}
+	#pagenavi .next:before{ top: 3px;}
+	#pagenavi .prev:before{ top: 3px;}
+	.container .mid-col .mid-col-container #content .archives .title{ font-size: 1.5em;}
+	.container .mid-col .mid-col-container #content article{ padding: 15px 0px;}
+	#header .subtitle {
+		line-height: 1.2em;
+		padding-top: 8px;
+	}
+	article pre{ background: none; border: none; padding: 0;}
+	article .entry-content{text-align: left;}
+	.share-comment{ padding: 25px 0px; clear: both;}
+	hr{ margin: 20px 0px;border: 0; border-top:solid 1px #ddd;}
+	</style>
+  
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+				<header id="header" class="inner">
+				 
+					
+					<h1><a href="index.html">0xn0p.org</a></h1>
+					<p class="subtitle">年轻算什么，你老过么？</p>
+					<nav id="main-nav">
+						<ul class="main">
+						
+						  <li id=""><a target="self" href="index.html">Home</a></li>
+						
+						  <li id=""><a target="_self" href="archives.html">Archives</a></li>
+						
+						</ul>
+					</nav>
+
+					<nav id="sub-nav">
+						<div class="social">
+
+
+
+
+
+
+
+
+
+
+
+<a target="_blank" class="email" href="mailto:hackerlq@gmail.com" title="Email">Email</a>
+
+								
+
+								<a class="rss" href="atom.xml" title="RSS">RSS</a>
+							
+						</div>
+					</nav>
+				</header>				
+			</div>
+		</div>	
+		<div class="mid-col">
+			<div class="mid-col-container"> <div id="content" class="inner">
+
+	<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+		<h1 class="title" itemprop="name">自建私有云系列——自建DNS</h1>
+		<div class="entry-content" itemprop="articleBody">
+			<p>由于众所周知的原因，部分国家和地区的DNS服务不太正常。具体表现为访问部分网站会被rst，还有在访问正常内容中突然出现不可描述的小广告。如何干净、快速、正常的进行访问，已成为一个重要问题。</p>
+
+<span id="more"></span><!-- more -->
+
+<h2 id="toc_0">现行方案调研</h2>
+
+<p>目前的解决方案主要有3种：</p>
+
+<p>一种是采用各种无劫持的DNS服务提供商，比如阿里的223.5.5.5，电信的114.114.114.114，但是带来一个问题，这类DNS服务提供商对一些“无法访问”的网站DNS处理按照规定进行了处理。这对我们时常要进行的正常活动带来不便。而且，我们的XXX对外部的其他服务提供商进行了屏蔽，需要经常更换我们的设置，带来不便。</p>
+
+<p>第二种是采用各种jia密手段，绕过先行设置，进行DNS查询。比较有代表性的有<strong>DNSCrypt</strong>，<strong>DNS over HTTPS</strong>等。这类手段解决了我们的一些问题，但是对现在流行的CDN不友好，因为查询全部经过处理，外部查询的地址为“外部”访问的较快IP，对我们正常使用服务如某酷、某奇艺、某度云、某Q音乐等造成困扰，经常无法访问。</p>
+
+<p>第三种对第二种方案进行了优化，让内部的走内部，外部的走外部。这种方案比较靠谱，代表性的是<strong>ChinaDNS</strong>，但是对用户来说的缺点就是安装配置较为复杂，而且据反馈性能不够可靠，没有加密，还是单机版。</p>
+
+<p>所以还是决定在第三种方案的基础上自建相关服务对外使用。</p>
+
+<p>对于自建服务，比较成熟的方案有<strong>DNSCrypt server</strong>，比较有意思的是在寻找现成方案期间发现科大也有类似服务，名字叫<strong>neatDNS</strong>。</p>
+
+<h2 id="toc_1">服务部署与调整</h2>
+
+<p>经过一系列调研，确定采用<a href="%09https://github.com/jedisct1/dnscrypt-server-docker">dnscrypt-server-docker</a>的方案进行部署，好处有：完全满足方案二，避免各种干扰。部分满足方案三，通过调整容器内部unbound设置实现CDN友好，且通过设置可实现对某果的云服务进行加速、屏蔽广告等效果。部署方面也比较简单，几条命令可以搞定。</p>
+
+<h3 id="toc_2">通过docker部署服务</h3>
+
+<pre class="line-numbers"><code class="language-shell">docker run --name=dns-server -v /root/config/unbound/zones:/opt/unbound/etc/unbound/zones -p 443:443/udp -p 443:443/tcp --net=host jedisct1/dnscrypt-server init -N 0xn0p.org -E IP:443
+</code></pre>
+
+<p>一条命令搞定，需要注意的是：<br/>
+ - 挂载的<strong>/myconfig/zones</strong> 目录为unbound设置目录，用来配置内部访问的DNS查询，加速，屏蔽广告等，需替换成自己的目录。<br/>
+ - <strong>-N example.com</strong> 中的example.com是自己设置的域名，用于客户端DNSCrypt使用，可以随意调整。<br/>
+ - <strong>-E IP:port</strong> 中的IP要填写你VPS的公网IP，对外服务。<br/>
+下载安装完毕后会发现屏幕中出现一串地址和KEY，别急，先复制保存，留给备用。</p>
+
+<h3 id="toc_3">配置unbound</h3>
+
+<p>服务已经安装完毕了，接着我们对unbound进行配置，达到CDN友好、加速等目的。<br/>
+首先clone <a href="%09https://github.com/felixonmars/dnsmasq-china-list">dnsmasq-china-list</a> ，看名字也能看出来是干啥的了。根据介绍生成查询国内地址用的服务器和unbound的配置文件:</p>
+
+<pre class="line-numbers"><code class="language-shell">make SERVER=119.29.29.29 unbound
+</code></pre>
+
+<p>将生成的<strong>X.unbound.conf</strong> 复制到部署时指定的zone文件夹，启动服务。</p>
+
+<pre class="line-numbers"><code class="language-shell">cp .unbound.conf /myconfig/zones
+docker start dns-server
+</code></pre>
+
+<p>如果你需要服务器重启后自动启动服务，应该这样：</p>
+
+<pre class="line-numbers"><code class="language-shell">docker update --restart=unless-stopped dns-server
+</code></pre>
+
+<h3 id="toc_4">客户端配置</h3>
+
+<p>上面服务端已经部署完毕，我们开始设置本地的客户端。</p>
+
+<p>对于不同的系统，手机，路由等，安装参考<a href="https://github.com/jedisct1/dnscrypt-proxy/wiki/installation">DNSCrypt_Installation</a>。这里以mac举例：</p>
+
+<pre class="line-numbers"><code class="language-shell">brew install dnscrypt-proxy
+sudo brew services start dnscrypt-proxy ##安装为服务，开机启动，切记请用sudo,否则不能绑定53端口且不报错
+</code></pre>
+
+<p>通过brew安装，配置文件位于<strong>/usr/local/etc/dnscrypt-proxy.toml</strong>，我们对其进行编辑，将刚才部署的服务地址加进去。</p>
+
+<ul>
+<li>找到<strong>server_names=</strong> 所在行，将里面其他的名字去掉，然后写上我们自己的名字，比如：clairvoyant</li>
+<li>找到最后的<strong>static</strong>块，把提供的example注释掉，换成我们自己的，sdns地址用服务部署时复制保留的地址。</li>
+</ul>
+
+<p>重新启动服务:</p>
+
+<pre class="line-numbers"><code class="language-shell">sudo brew services start dnscrypt-proxy
+</code></pre>
+
+<p>测试是否安装成功：<br/>
+<img src="https://i.loli.net/2018/07/02/5b39176868c30.png" alt="dns"/></p>
+
+<p>观察resolver IP为设置的服务器地址。</p>
+
+<h2 id="toc_5">后记</h2>
+
+<p>这里其实有点小问题，因为考虑到自用的网络udp污染严重，如果国内IP直接通过unbound查询不走DNSCrypt的话会被污染、劫持，所以采用了所有IP全部走DNSCrypt的方案。如果网络较好，且个人加密，在本地利用dnsmaq分流加缓存+dnscrypt查询公有服务器（配置文件提供的各个示例）就能达到上述效果。</p>
+
+		</div>
+	</article>
+	<div class="share-comment">
+	 <div id="container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+var gitment = new Gitment({
+  id: '页面 ID', // 可选。默认为 location.href
+  owner: 'cflq3',
+  repo: '0xn0p.github.io',
+  oauth: {
+    client_id: '217b897a6536954827de',
+    client_secret: '66efe3f80cb72d9c6e047b05b84d63ed372cd9ad',
+  },
+})
+gitment.render('container')
+</script>
+
+	  
+
+	  
+
+	</div>
+</div>        </div>
+			<footer id="footer" class="inner">Copyright &copy; 2014
+Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; 
+Theme by <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+      </footer>
+		</div>
+	</div>
+
+  
+    
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><script type="text/x-mathjax-config">MathJax.Hub.Config({TeX: { equationNumbers: { autoNumber: "AMS" } }});</script>
+
+</body>
+</html>
